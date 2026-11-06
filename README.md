@@ -1,54 +1,57 @@
-# Node.js + Express Backend Setup
+# Node.js Auth & CRUD App
 
-A secure, scalable backend API built with Express, featuring JWT authentication, password hashing, and image upload capabilities. This setup is designed to integrate seamlessly with modern frontend frameworks like Next.js.
+A simple authentication and user management (CRUD) application with role-based access (User and Admin) built with Node.js, Express, and MongoDB.
 
-## Tech Stack & Dependencies
+## Features
+- **Authentication:** Register and login with email and password (passwords hashed using `bcryptjs`, sessions managed via `jsonwebtoken`).
+- **User Role:** View and update profile (edit name and upload profile image using `multer`).
+- **Admin Role:** Full CRUD access (view all users, edit user details, and delete users).
 
-| Package | Purpose |
-| --- | --- |
-| **express** | The core web framework to handle HTTP requests (GET, POST, PUT, DELETE) and API routing. |
-| **dotenv** | Loads secret configurations (ports, JWT secrets, DB connections) from a `.env` file into `process.env`. |
-| **cors** | Enables Cross-Origin Resource Sharing, allowing frontends (like Next.js on port 3000) to safely communicate with this backend. |
-| **bcryptjs** | Hashes passwords with salt rounds, ensuring plain-text passwords are never stored in the database. |
-| **jsonwebtoken** | Creates and verifies JWT tokens to manage secure, stateless user sessions and logins. |
-| **multer** | Middleware for handling `multipart/form-data`, which is required for processing image and file uploads. |
-| **nodemon** | A development utility that automatically restarts the Node server whenever code changes are saved. |
+---
 
-## Getting Started
+## Current Backend Setup
 
-### 1. Install Dependencies
-
-Install the core packages:
-
-```bash
-npm install express dotenv cors bcryptjs jsonwebtoken multer
-
+### Project Structure
+```
+backend/
+├── config/             # Database connection logic
+├── controllers/        # Business logic for auth and user CRUD
+├── middleware/         # JWT auth guard and Multer file upload setup
+├── models/             # Mongoose schemas (User model)
+├── routes/             # API route definitions
+├── uploads/            # Local storage for profile images
+├── .env                # Secrets (Port, MongoDB URI, JWT Secret)
+├── .gitignore          # Excludes node_modules, .env, and uploads
+├── package.json        # Project scripts and dependencies
+└── server.js           # Main Express server entry point
 ```
 
-Install the development dependency:
+---
 
-```bash
-npm install --save-dev nodemon
+## Configuration
 
-```
-
-### 2. Environment Configuration
-
-Create a `.env` file in the root of your project and add your secrets:
+### 1. Environment Variables
+Create a `.env` file inside the `backend/` folder:
 
 ```env
 PORT=5000
-JWT_SECRET=your_super_secret_key_here
-
+MONGO_URI=mongodb://127.0.0.1:27017/node_auth_db
+JWT_SECRET=your_jwt_secret_key
 ```
 
-### 3. Running the Server
+### 2. How to Run
 
-To start the server with auto-reloading enabled, run:
-
+Navigate into the `backend` directory:
 ```bash
-npx nodemon server.js
-
+cd backend
 ```
 
-*(Optional: You can add `"dev": "nodemon server.js"` to the `"scripts"` section of your `package.json` so you can run it using `npm run dev`)*
+Install dependencies (if not already installed):
+```bash
+npm install
+```
+
+Start the development server with auto-reload:
+```bash
+npm run dev
+```
