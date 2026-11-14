@@ -6,6 +6,8 @@ import connectDB from './config/db.js';
 import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
 
+import path from 'path';
+
 dotenv.config();
 
 connectDB();
@@ -20,6 +22,9 @@ app.use(express.json());
 // Routes middleware
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+
+// serve uploaded images statically so they can be viewed via URL
+app.use('/uploads', express.static(path.join(process.cwd(),'uploads')))
 
 // test route 
 app.get('/', (req,res)=>{
