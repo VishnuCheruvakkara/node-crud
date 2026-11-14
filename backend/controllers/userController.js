@@ -15,6 +15,10 @@ export const updateUserProfile = async (req, res) => {
         if (user){
             user.name = req.body.name || user.name
 
+            if (req.file){
+                user.profileImage = `/uploads/${req.file.filename}`;
+            };
+
             const updatedUser = await user.save();
 
             res.json({
