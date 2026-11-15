@@ -15,8 +15,8 @@ export const protect = async (req, res, next) => {
             // Find user in DB by id from token payload, excluding password
             req.user = await User.findById(decoded.id).select('-password');
 
-            if (!req.user){
-                return res.status(401).json({ message: 'User not found' });
+            if (!req.user || req.user.isDeleted){
+                return res.status(401).json({ message: 'User not found or Account deactivated' });
             }
 
             // Move to the controller
