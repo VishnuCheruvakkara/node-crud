@@ -49,7 +49,11 @@ export const loginUser = async (req, res) => {
                 message: "Invalid email or password!"
             })
         }
-        
+
+     if(user.isDeleted){
+        return res.status(403).json({message: 'This account has been deactivated.'})
+     }
+
         const isMatch = await user.matchPassword(password);
 
         if (!isMatch){
