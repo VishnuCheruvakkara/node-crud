@@ -280,6 +280,7 @@ export default function AdminDashboardPage() {
         name={editName}
         email={editEmail}
         role={editRole}
+        isSelf={editingUser?._id === authUser?._id}
         previewUrl={editPreviewUrl}
         onImageChange={(file, preview) => {
           setEditImageFile(file);

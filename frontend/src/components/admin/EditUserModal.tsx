@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { FiEdit2, FiX, FiCheck, FiCamera } from 'react-icons/fi';
+import { FiEdit2, FiX, FiCheck, FiCamera, FiShield } from 'react-icons/fi';
 import InputField from '@/components/common/InputField';
 import Button from '@/components/common/Button';
 
@@ -8,6 +8,7 @@ interface EditUserModalProps {
   name: string;
   email: string;
   role: 'user' | 'admin';
+  isSelf?: boolean;
   previewUrl: string;
   onImageChange: (file: File | null, preview: string) => void;
   onNameChange: (val: string) => void;
@@ -23,6 +24,7 @@ export default function EditUserModal({
   name,
   email,
   role,
+  isSelf = false,
   previewUrl,
   onImageChange,
   onNameChange,
@@ -141,23 +143,40 @@ export default function EditUserModal({
             onChange={(e) => onEmailChange(e.target.value)}
           />
 
-          <div>
-            <label
-              htmlFor="edit-role-select"
-              className="block text-sm font-semibold text-secondary mb-1.5"
-            >
-              Account Role
-            </label>
-            <select
-              id="edit-role-select"
-              value={role}
-              onChange={(e) => onRoleChange(e.target.value as 'user' | 'admin')}
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-accent text-secondary font-medium cursor-pointer"
-            >
-              <option value="user">User (Standard)</option>
-              <option value="admin">Admin (Full Access)</option>
-            </select>
-          </div>
+          {isSelf ? (
+            <div>
+              <label className="block text-sm font-semibold text-secondary mb-1.5">
+                Account Role
+              </label>
+              <div className="flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm">
+                <span className="font-semibold text-primary capitalize flex items-center gap-1.5">
+                  <FiShield className="w-4 h-4 text-accent" />
+                  {role} (Active Administrator)
+                </span>
+                <span className="text-xs text-gray-500 italic">
+                  Cannot change your own role
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label
+                htmlFor="edit-role-select"
+                className="block text-sm font-semibold text-secondary mb-1.5"
+              >
+                Account Role
+              </label>
+              <select
+                id="edit-role-select"
+                value={role}
+                onChange={(e) => onRoleChange(e.target.value as 'user' | 'admin')}
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-accent text-secondary font-medium cursor-pointer"
+              >
+                <option value="user">User (Standard)</option>
+                <option value="admin">Admin (Full Access)</option>
+              </select>
+            </div>
+          )}
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <Button

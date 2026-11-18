@@ -81,6 +81,11 @@ export const updateUser = async(req, res) => {
                 return res.status(404).json({message:'User not found!'});
             }
 
+            // Prevent admin from changing their own role
+            if (user._id.toString() === req.user._id.toString() && req.body.role && req.body.role !== user.role) {
+                return res.status(400).json({ message: 'Admins cannot change their own role!' });
+            }
+
             user.name = req.body.name || user.name;
             user.email = req.body.email || user.email;
             user.role = req.body.role || user.role;
