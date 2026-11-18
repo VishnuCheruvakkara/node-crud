@@ -14,6 +14,7 @@ interface UserTableProps {
   totalPages: number;
   itemsPerPage: number;
   onPageChange: (page: number) => void;
+  onItemsPerPageChange?: (size: number) => void;
 }
 
 export default function UserTable({
@@ -27,6 +28,7 @@ export default function UserTable({
   totalPages,
   itemsPerPage,
   onPageChange,
+  onItemsPerPageChange,
 }: UserTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
@@ -151,6 +153,7 @@ export default function UserTable({
         totalItems={totalUsers}
         itemsPerPage={itemsPerPage}
         onPageChange={onPageChange}
+        onItemsPerPageChange={onItemsPerPageChange}
       />
     </div>
   );

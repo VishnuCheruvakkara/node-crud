@@ -24,7 +24,12 @@ export default function AdminDashboardPage() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const handleItemsPerPageChange = (size: number) => {
+    setItemsPerPage(size);
+    setCurrentPage(1);
+  };
 
   // Edit Modal State
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -272,6 +277,7 @@ export default function AdminDashboardPage() {
         totalPages={totalPages}
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
+        onItemsPerPageChange={handleItemsPerPageChange}
       />
 
       {/* Reusable Edit Modal Dialog Component (With Image Upload) */}
