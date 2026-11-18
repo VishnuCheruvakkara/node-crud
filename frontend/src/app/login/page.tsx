@@ -3,8 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useMutation } from '@tanstack/react-query';
+import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
 import api from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
+import Loader from '@/components/common/Loader';
+import Alert from '@/components/common/Alert';
+import InputField from '@/components/common/InputField';
+import Button from '@/components/common/Button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,19 +18,17 @@ export default function LoginPage() {
 
   const { login } = useAuth();
 
-  // TanStack Query Mutation for handling Login POST request
   const loginMutation = useMutation({
     mutationFn: async () => {
       const res = await api.post('/auth/login', { email, password });
       return res.data;
     },
     onSuccess: (data) => {
-      // Calls AuthContext login: saves token & redirects by role
       login(data);
     },
     onError: (err: any) => {
       setErrorMessage(
-        err.response?.data?.message || 'Something went wrong. Please try again.'
+        err.response?.data?.message || 'Invalid email or password'
       );
     },
   });
@@ -41,73 +44,67 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-gray-100 p-8">
         {/* Header */}
         <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-mint/40 text-primary rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <FiLogIn className="w-6 h-6 text-accent" />
+          </div>
           <h1 className="text-2xl font-bold text-primary">Welcome Back</h1>
-          <p className="text-sm text-gray-500 mt-2">
-            Enter your credentials to access your account
+          <p className="text-sm text-gray-500 mt-1">
+            Sign in to access your dashboard
           </p>
         </div>
 
-        {/* Error Notification */}
-        {errorMessage && (
-          <div className="mb-6 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm font-medium">
-            {errorMessage}
-          </div>
-        )}
+        {/* Reusable Alert / Validation Message */}
+        <Alert
+          message={errorMessage}
+          type="error"
+          onClose={() => setErrorMessage('')}
+          className="mb-5"
+        />
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-semibold text-secondary mb-1.5">
-              Email Address
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
-            />
-          </div>
+        {/* Form with Reusable Input Fields */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <InputField
+            label="Email Address"
+            type="email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            icon={<FiMail className="w-4 h-4" />}
+          />
 
-          <div>
-            <label className="block text-sm font-semibold text-secondary mb-1.5">
-              Password
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all"
-            />
-          </div>
+          <InputField
+            label="Password"
+            type="password"
+            name="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            icon={<FiLock className="w-4 h-4" />}
+          />
 
-          <button
+          <Button
             type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full bg-accent hover:bg-secondary text-white font-semibold py-2.5 px-4 rounded-lg shadow transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            variant="primary"
+            isLoading={loginMutation.isPending}
+            loadingText="Signing in..."
+            icon={<FiLogIn className="w-4 h-4" />}
+            className="w-full mt-2"
           >
-            {loginMutation.isPending ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Logging in...
-              </>
-            ) : (
-              'Sign In'
-            )}
-          </button>
+            Sign In
+          </Button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer */}
         <div className="mt-8 text-center text-sm text-gray-500">
           Don't have an account?{' '}
           <Link
             href="/register"
             className="font-semibold text-accent hover:text-secondary transition-colors underline"
           >
-            Sign up
+            Create account
           </Link>
         </div>
       </div>
