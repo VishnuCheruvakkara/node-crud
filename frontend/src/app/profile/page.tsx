@@ -214,7 +214,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-accent hover:text-secondary border border-accent/40 hover:border-secondary px-3 py-1.5 rounded-md transition-colors"
+                className="mt-3 inline-flex items-center gap-2 text-xs font-semibold text-accent hover:text-secondary border border-accent/40 hover:border-secondary px-3 py-1.5 rounded-md transition-colors cursor-pointer"
               >
                 <FiCamera className="w-3.5 h-3.5" />
                 <span>Choose Image</span>

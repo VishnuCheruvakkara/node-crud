@@ -17,3 +17,24 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
 }
+
+/* Ensure mouse pointer appears on all interactive elements across the app */
+button:not(:disabled),
+select:not(:disabled),
+summary,
+[role="button"],
+a,
+label[for],
+input[type="button"],
+input[type="submit"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed !important;
+}

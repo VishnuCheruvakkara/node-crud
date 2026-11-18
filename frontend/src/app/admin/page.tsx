@@ -250,7 +250,7 @@ export default function AdminDashboardPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value as any)}
-            className="border border-gray-200 text-sm font-medium rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent text-secondary"
+            className="border border-gray-200 text-sm font-medium rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent text-secondary cursor-pointer"
           >
             <option value="all">All Roles</option>
             <option value="user">Users Only</option>
@@ -339,7 +339,7 @@ export default function AdminDashboardPage() {
                         <div className="inline-flex items-center gap-2">
                           <button
                             onClick={() => openEditModal(u)}
-                            className="p-2 text-secondary hover:text-white hover:bg-secondary rounded-lg border border-gray-200 transition-colors"
+                            className="p-2 text-secondary hover:text-white hover:bg-secondary rounded-lg border border-gray-200 transition-colors cursor-pointer"
                             title="Edit User"
                           >
                             <FiEdit2 className="w-4 h-4" />
@@ -351,7 +351,7 @@ export default function AdminDashboardPage() {
                             className={`p-2 rounded-lg border transition-colors ${
                               isCurrentAdmin
                                 ? 'opacity-30 cursor-not-allowed text-gray-400 border-gray-200'
-                                : 'text-rose-600 hover:text-white hover:bg-rose-600 border-rose-200'
+                                : 'text-rose-600 hover:text-white hover:bg-rose-600 border-rose-200 cursor-pointer'
                             }`}
                             title={
                               isCurrentAdmin
@@ -383,7 +383,7 @@ export default function AdminDashboardPage() {
               </h3>
               <button
                 onClick={() => setEditingUser(null)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-md"
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-md cursor-pointer"
               >
                 <FiX className="w-5 h-5" />
               </button>
@@ -419,7 +419,7 @@ export default function AdminDashboardPage() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as any)}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-accent text-secondary font-medium"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-accent text-secondary font-medium cursor-pointer"
                 >
                   <option value="user">User (Standard)</option>
                   <option value="admin">Admin (Full Access)</option>

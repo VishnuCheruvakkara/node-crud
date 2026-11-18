@@ -94,7 +94,7 @@ export default function Navbar() {
                 {/* Logout Button */}
                 <button
                   onClick={logout}
-                  className="ml-2 text-sm text-rose-300 hover:text-white bg-secondary/60 hover:bg-rose-900/60 border border-rose-800/50 px-3 py-1.5 rounded-md font-medium transition-colors inline-flex items-center gap-1.5"
+                  className="ml-2 text-sm text-rose-300 hover:text-white bg-secondary/60 hover:bg-rose-900/60 border border-rose-800/50 px-3 py-1.5 rounded-md font-medium transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <FiLogOut className="w-3.5 h-3.5" />
                   <span>Logout</span>
