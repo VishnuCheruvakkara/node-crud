@@ -12,20 +12,30 @@ import AdminStats from '@/components/admin/AdminStats';
 import AdminFilters from '@/components/admin/AdminFilters';
 import UserTable from '@/components/admin/UserTable';
 import EditUserModal from '@/components/admin/EditUserModal';
+import DeleteUserModal from '@/components/admin/DeleteUserModal';
 
 export default function AdminDashboardPage() {
-  const { user: authUser, loading: authLoading } = useAuth();
+  const { user: authUser, loading: authLoading, updateUser: updateAuthUser } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'user' | 'admin'>('all');
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Edit Modal State
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editRole, setEditRole] = useState<'user' | 'admin'>('user');
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editPreviewUrl, setEditPreviewUrl] = useState('');
+
+  // Delete Modal State
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   // Notifications
   const [successMessage, setSuccessMessage] = useState('');
@@ -41,6 +51,11 @@ export default function AdminDashboardPage() {
       }
     }
   }, [authUser, authLoading, router]);
+
+  // Reset page to 1 whenever search or role filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, roleFilter]);
 
   // 2. TanStack Query: Fetch all users
   const {
@@ -64,6 +79,7 @@ export default function AdminDashboardPage() {
     },
     onSuccess: () => {
       setSuccessMessage('User soft-deleted successfully!');
+      setUserToDelete(null);
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setTimeout(() => setSuccessMessage(''), 4000);
     },
@@ -74,20 +90,37 @@ export default function AdminDashboardPage() {
     },
   });
 
-  // 4. TanStack Query Mutation: Update User
+  // 4. TanStack Query Mutation: Update User (supports multipart/form-data with image)
   const updateMutation = useMutation({
     mutationFn: async () => {
       if (!editingUser) return;
-      const res = await api.patch(`/users/${editingUser._id}`, {
-        name: editName,
-        email: editEmail,
-        role: editRole,
+
+      const formData = new FormData();
+      formData.append('name', editName);
+      formData.append('email', editEmail);
+      formData.append('role', editRole);
+
+      if (editImageFile) {
+        formData.append('image', editImageFile);
+      }
+
+      const res = await api.patch(`/users/${editingUser._id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (updatedUser: User) => {
       setSuccessMessage('User updated successfully!');
+
+      // If the admin edited their own profile, sync global auth context
+      if (editingUser && editingUser._id === authUser?._id) {
+        updateAuthUser(updatedUser);
+      }
+
       setEditingUser(null);
+      setEditImageFile(null);
       queryClient.invalidateQueries({ queryKey: ['users'] });
       setTimeout(() => setSuccessMessage(''), 4000);
     },
@@ -104,12 +137,20 @@ export default function AdminDashboardPage() {
     setEditName(userToEdit.name);
     setEditEmail(userToEdit.email);
     setEditRole(userToEdit.role);
+    setEditImageFile(null);
+    setEditPreviewUrl(
+      userToEdit.profileImage
+        ? `http://localhost:5000${userToEdit.profileImage}`
+        : ''
+    );
     setErrorMessage('');
   };
 
   // Close Edit Modal
   const handleCloseEdit = () => {
     setEditingUser(null);
+    setEditImageFile(null);
+    setEditPreviewUrl('');
   };
 
   // Handle Edit Submit
@@ -118,9 +159,14 @@ export default function AdminDashboardPage() {
     updateMutation.mutate();
   };
 
-  // Handle Delete Confirmation
-  const handleDeleteUser = (userToDelete: User) => {
-    if (confirm(`Are you sure you want to delete user "${userToDelete.name}"?`)) {
+  // Handle Delete Confirmation Modal open
+  const handleOpenDelete = (userItem: User) => {
+    setUserToDelete(userItem);
+  };
+
+  // Handle Delete Confirm action
+  const handleConfirmDelete = () => {
+    if (userToDelete) {
       deleteMutation.mutate(userToDelete._id);
     }
   };
@@ -135,6 +181,14 @@ export default function AdminDashboardPage() {
 
     return matchesSearch && matchesRole;
   });
+
+  // Pagination calculation
+  const totalUsersCount = filteredUsers.length;
+  const totalPages = Math.ceil(totalUsersCount / itemsPerPage) || 1;
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   // Calculate quick stats
   const totalUsers = users.length;
@@ -174,7 +228,7 @@ export default function AdminDashboardPage() {
             </span>
           </div>
           <p className="text-sm text-secondary mt-1">
-            View, edit user roles, and soft-delete user accounts
+            View, edit user roles, upload photos, and soft-delete user accounts
           </p>
         </div>
       </div>
@@ -206,27 +260,46 @@ export default function AdminDashboardPage() {
         onRoleFilterChange={setRoleFilter}
       />
 
-      {/* Reusable Users Table Component */}
+      {/* Reusable Users Table Component with Pagination */}
       <UserTable
-        users={filteredUsers}
+        users={paginatedUsers}
         currentUserId={authUser?._id}
         onEdit={handleOpenEdit}
-        onDelete={handleDeleteUser}
+        onDelete={handleOpenDelete}
         isDeleting={deleteMutation.isPending}
+        totalUsers={totalUsersCount}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
       />
 
-      {/* Reusable Edit Modal Dialog Component */}
+      {/* Reusable Edit Modal Dialog Component (With Image Upload) */}
       <EditUserModal
         isOpen={!!editingUser}
         name={editName}
         email={editEmail}
         role={editRole}
+        previewUrl={editPreviewUrl}
+        onImageChange={(file, preview) => {
+          setEditImageFile(file);
+          setEditPreviewUrl(preview);
+        }}
         onNameChange={setEditName}
         onEmailChange={setEditEmail}
         onRoleChange={setEditRole}
         onClose={handleCloseEdit}
         onSubmit={handleEditSubmit}
         isSaving={updateMutation.isPending}
+      />
+
+      {/* Reusable Custom Confirmation Modal for Soft Deleting */}
+      <DeleteUserModal
+        isOpen={!!userToDelete}
+        user={userToDelete}
+        onClose={() => setUserToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        isDeleting={deleteMutation.isPending}
       />
     </div>
   );

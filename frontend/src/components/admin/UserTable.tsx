@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiShield, FiTrash2, FiEdit2 } from 'react-icons/fi';
 import { User } from '@/types/user';
+import Pagination from '@/components/common/Pagination';
 
 interface UserTableProps {
   users: User[];
@@ -8,6 +9,11 @@ interface UserTableProps {
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
   isDeleting?: boolean;
+  totalUsers: number;
+  currentPage: number;
+  totalPages: number;
+  itemsPerPage: number;
+  onPageChange: (page: number) => void;
 }
 
 export default function UserTable({
@@ -16,6 +22,11 @@ export default function UserTable({
   onEdit,
   onDelete,
   isDeleting = false,
+  totalUsers,
+  currentPage,
+  totalPages,
+  itemsPerPage,
+  onPageChange,
 }: UserTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
@@ -132,6 +143,15 @@ export default function UserTable({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Footer */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalUsers}
+        itemsPerPage={itemsPerPage}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 }

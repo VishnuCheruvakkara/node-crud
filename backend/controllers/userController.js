@@ -85,14 +85,19 @@ export const updateUser = async(req, res) => {
             user.email = req.body.email || user.email;
             user.role = req.body.role || user.role;
 
+            if (req.file) {
+                user.profileImage = `/uploads/${req.file.filename}`;
+            }
+
             const updatedUser = await user.save();
 
             res.json({
                 _id: updatedUser._id,
                 name: updatedUser.name,
-                email:updatedUser.email,
+                email: updatedUser.email,
                 role: updatedUser.role,
-            })
+                profileImage: updatedUser.profileImage,
+            });
 
         }catch(error){
             res.status(500).json({message: error.message});

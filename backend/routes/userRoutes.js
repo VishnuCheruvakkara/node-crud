@@ -11,7 +11,7 @@ router.patch('/profile', protect, upload.single('image'), updateUserProfile);
 
 //admin routes
 router.get('/', protect, adminOnly, getAllUsers);
-router.patch('/:id', protect, adminOnly, updateUser);
+router.patch('/:id', protect, adminOnly, upload.single('image'), updateUser);
 router.delete('/:id', protect, adminOnly, deleteUser);
 
 export default router;
