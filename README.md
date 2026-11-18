@@ -1,5 +1,7 @@
 # Full-Stack Node.js & Next.js Authentication and User Management App
 
+![Application Preview](./assets/image.png)
+
 A production-grade authentication and user management (CRUD) application with role-based access control (User and Admin) built from scratch using Node.js, Express, MongoDB, Next.js 16 (App Router), TypeScript, Tailwind CSS v4, and TanStack Query.
 
 ---
