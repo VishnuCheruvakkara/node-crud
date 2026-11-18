@@ -42,8 +42,8 @@ export const updateUserProfile = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try{
-        // Fetch all users data without password
-        const users = await User.find({isDeleted: false, role: 'user'}).select('-password');
+        // Fetch all active users (both users and admins), excluding password
+        const users = await User.find({ isDeleted: false }).select('-password');
 
         res.json(users);
     }catch(error){
